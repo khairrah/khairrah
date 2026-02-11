@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tambah Buku</title>
+    <title>Tambah Alat</title>
 </head>
 <body>
-    <h2>Tambah Buku</h2>
+    <h2>Tambah Alat</h2>
 
     <form action="/books" method="POST">
         @csrf
 
-        <label>Kode Buku</label><br>
+        <label>Id Alat</label><br>
         <input type="text" name="kode_buku"><br><br>
 
-        <label>Judul</label><br>
+        <label>Nama Alat</label><br>
         <input type="text" name="judul"><br><br>
 
-        <label>Pengarang</label><br>
+        <label>Lokasi</label><br>
         <input type="text" name="pengarang"><br><br>
 
-        <label>Penerbit</label><br>
+        <label>Kondisi</label><br>
         <input type="text" name="penerbit"><br><br>
-
-        <label>Tahun</label><br>
-        <input type="number" name="tahun"><br><br>
 
         <label>Stok</label><br>
         <input type="number" name="stok"><br><br>

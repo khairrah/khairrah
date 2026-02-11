@@ -157,13 +157,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($historyLoans as $loan)
-                    <tr class="border-b" style="background-color: #FFF7E6;">
-                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tool->nama_alat ?? '-' }}</td>
-                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->jumlah }}</td>
-                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_pinjam }}</td>
-                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_kembali }}</td>
-                    </tr>
+                    
                     @endforeach
                 </tbody>
             </table>

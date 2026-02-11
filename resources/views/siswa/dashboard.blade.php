@@ -8,7 +8,7 @@
         Halo, {{ auth()->user()->name }}! 👋
     </h1>
     <p class="mt-2 drop-shadow-sm" style="color: #374151;">
-        Selamat datang di sistem Inventaris
+        Selamat datang di peminjaman alat
     </p>
 </div>
 

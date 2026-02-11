@@ -10,6 +10,8 @@ class Tool extends Model
     use HasFactory;
 
     protected $fillable = [
+        'kode_alat',
+        'merk',
         'category_id',
         'id_alat',
         'nama_alat',
