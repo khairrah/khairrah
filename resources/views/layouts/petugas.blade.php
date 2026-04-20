@@ -2,109 +2,120 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - UKK Alat</title>
+    <title>Petugas - UKK Alat</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
+    
+    <style>
+        body {
+            background-color: #EFF6FF; /* soft blue background */
+        }
+
+        thead {
+            background-color: #DBEAFE;
+            border-bottom: 2px solid #93C5FD;
+        }
+
+        h1, th {
+            color: #1E3A8A;
+        }
+
+        table td {
+            vertical-align: middle;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
 </head>
 
-<body style="background-color: #FFF7E6;">
+<body>
 
 <div class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <div class="w-64 text-gray-800 flex flex-col shadow-lg border-r border-gray-200" style="background-color: #FFF7E6;">
+    <div class="w-64 text-gray-800 flex flex-col shadow-xl border-r border-blue-200" style="background-color: #EFF6FF;">
 
         <!-- LOGO -->
-        <div class="p-4 text-xl font-bold border-b border-gray-200 rounded-b-lg" style="background-color: #CDEDEA; color: #374151;">
-            📚 UKK Alat
+        <div class="p-6 text-xl font-bold border-b border-blue-200 flex items-center gap-2" style="background-color: #DBEAFE;">
+            📘 UKK Alat
         </div>
 
         <!-- USER -->
-        <div class="p-4 text-sm border-b border-gray-200" style="background-color: #DCEBFA;">
-            <span style="color: #374151;">Login sebagai:</span><br>
-            <b style="color: #374151;">{{ auth()->user()->name }}</b><br>
-            <span class="text-xs font-semibold" style="color: #374151;">{{ auth()->user()->role }}</span>
+        <div class="p-5 border-b border-blue-200" style="background-color: #E0F2FE;">
+            <p class="text-xs text-blue-500 font-bold uppercase">Login sebagai:</p>
+            <p class="text-sm text-blue-700 font-semibold">{{ auth()->user()->name }}</p>
+            <p class="text-xs text-blue-500">{{ auth()->user()->role }}</p>
         </div>
 
         <!-- MENU -->
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
 
             <!-- DASHBOARD -->
-            <a href="{{ route('dashboard') }}"
-            <a class="block px-4 py-3 rounded-lg
-           text-[15px] font-medium
-           text-slate-700
-           hover:bg-blue-100 hover:text-blue-700
-           transition">
-    🏠 Dashboard
-</a>
-
-            </a>
-
-            <!-- MASTER DATA -->
-            <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;">Master Data</p>
+            <div class="mt-2 mb-2 px-4">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400">Utama</p>
             </div>
 
-            <a href="{{ route('tools.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('tools*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                📦 Data Alat
-            </a>
-
-            <a href="{{ route('categories.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('categories*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                🏷️ Kategori
+            <a href="{{ route('petugas.dashboard') }}"
+               class="block px-4 py-3 rounded-lg font-semibold border-l-4 transition"
+               style="{{ request()->is('petugas/dashboard') ? 'background-color: #BFDBFE; color: #1E3A8A; border-color: #3B82F6;' : 'color: #1E3A8A;' }}">
+                🏠 Dashboard
             </a>
 
             <!-- TRANSAKSI -->
-            <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;">Transaksi</p>
+            <div class="mt-6 mb-2 px-4">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400">Transaksi</p>
             </div>
 
-            <a href="{{ route('loans.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('loans*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                🔄 Data Peminjamaan
+            <a href="{{ route('petugas.tools') }}"
+               class="block px-4 py-3 rounded-lg font-semibold border-l-4 transition"
+               style="color: #1E3A8A;">
+                📦 Daftar Alat
             </a>
 
-            <a href="{{ route('returns.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('returns*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
+            <a href="{{ route('petugas.approve-loans') }}"
+               class="block px-4 py-3 rounded-lg font-semibold border-l-4 transition"
+               style="color: #1E3A8A;">
+                ✔️ Setujui Peminjaman
+            </a>
+
+            <a href="{{ route('petugas.validate-returns') }}"
+               class="block px-4 py-3 rounded-lg font-semibold border-l-4 transition"
+               style="color: #1E3A8A;">
                 ↩️ Pengembalian
             </a>
 
-            <!-- ADMINISTRATOR -->
-            <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;">Administrator</p>
+            <!-- LAPORAN -->
+            <div class="mt-6 mb-2 px-4">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400">Laporan</p>
             </div>
 
-            <a href="{{ route('users.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('users*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                👥 Manajemen User
+            <a href="{{ route('petugas.reports') }}"
+               class="block px-4 py-3 rounded-lg font-semibold border-l-4 transition"
+               style="color: #1E3A8A;">
+                📊 Laporan
             </a>
 
-            <a href="{{ route('activity-logs.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('activity-logs*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                📊 Log Aktivitas
+            <a href="{{ route('petugas.laporan-peminjaman') }}"
+               class="block px-4 py-3 rounded-lg font-semibold border-l-4 transition"
+               style="color: #1E3A8A;">
+                📚 Laporan Peminjaman
             </a>
 
         </nav>
 
         <!-- LOGOUT -->
-        <form method="POST" action="{{ route('logout') }}" class="p-4 border-t border-gray-200">
-            @csrf
-            <button class="w-full py-2 rounded font-semibold transition" style="background-color: #5B9FFF; color: #FFFFFF;">
-                🚪 Logout
-            </button>
-        </form>
-
+        <div class="p-4 border-t border-blue-200">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="w-full py-3 rounded-lg font-bold text-white transition"
+                        style="background-color: #3B82F6;">
+                    🚪 Logout
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- KONTEN -->
-    <div class="flex-1 p-8 text-gray-900 overflow-x-auto" style="background-color: #FFF7E6;">
+    <!-- CONTENT -->
+    <div class="flex-1 p-8 text-gray-900 overflow-x-auto">
         @yield('content')
     </div>
 

@@ -26,12 +26,13 @@
     <h2 class="text-2xl font-bold mb-4" style="color: #374151;">📦 Peminjaman Aktif</h2>
 
     @php
-        $myLoans = \App\Models\Loan::where('user_id', auth()->id())
-            ->whereNull('tanggal_kembali')
-            ->with('tool')
-            ->orderBy('tanggal_pinjam', 'desc')
-            ->get();
-    @endphp
+    $myLoans = \App\Models\Loan::where('user_id', auth()->id())
+        ->whereNull('tanggal_kembali')
+        ->whereNotNull('tool_id') // 
+        ->with('tool')
+        ->orderBy('tanggal_pinjam', 'desc')
+        ->get();
+@endphp
 
     @if($myLoans->count())
         <div class="overflow-x-auto">
@@ -62,9 +63,12 @@
                         </td>
                         <td class="px-4 py-2 text-left" style="font-size: 0.9rem;">
                             @if($loan->status === 'approved')
-                                <button onclick="openAlasanModal({{ $loan->id }}, '{{ $loan->tool->nama_alat }}')" class="px-3 py-1 rounded text-sm font-semibold" style="background-color: #DBEAFE; color: #1e40af; text-decoration: none; cursor: pointer;">
-                                    {{ $loan->alasan_siswa ? '✏️ Lihat/Edit' : '➕ Tambah Laporan' }}
-                                </button>
+                            <button 
+onclick="openAlasanModal({{ $loan->id }}, '{{ optional($loan->tool)->nama_alat ?? 'Alat tidak ditemukan' }}')" 
+class="px-3 py-1 rounded text-sm font-semibold"
+style="background-color: #DBEAFE; color: #1e40af; cursor: pointer;">
+    {{ $loan->alasan_siswa ? '✏️ Lihat/Edit' : '➕ Tambah Laporan' }}
+</button>
                                 @if($loan->alasan_siswa)
                                     <div style="margin-top: 0.5rem; padding: 0.5rem; background-color: #FEF3C7; border-left: 3px solid #F59E0B; font-size: 0.85rem;">
                                         {{ $loan->alasan_siswa }}
@@ -157,7 +161,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    @foreach($historyLoans as $loan)
+                    <tr class="border-b" style="background-color: #FFF7E6;">
+                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tool->nama_alat ?? '-' }}</td>
+                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->jumlah }}</td>
+                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_pinjam }}</td>
+                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_kembali }}</td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>

@@ -102,7 +102,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>STRUK PEMINJAMAN ALAT/BARANG</h1>
+            <h1>LAPORAN DENDA PEMINJAMAN ALAT/BARANG</h1>
             <p>Manajemen Alat</p>
             <p>Nomor Transaksi: {{ $loan->id }}</p>
         </div>

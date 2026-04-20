@@ -43,7 +43,7 @@
 
             <!-- MASTER DATA -->
             <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;">Master Data</p>
+                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;"></p>
             </div>
 
             <a href="{{ route('tools.index') }}"
@@ -60,7 +60,7 @@
 
             <!-- TRANSAKSI -->
             <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;">Transaksi</p>
+                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;"></p>
             </div>
 
             <a href="{{ route('loans.index') }}"
@@ -77,7 +77,7 @@
 
             <!-- ADMINISTRATOR -->
             <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;">Administrator</p>
+                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;"></p>
             </div>
 
             <a href="{{ route('users.index') }}"

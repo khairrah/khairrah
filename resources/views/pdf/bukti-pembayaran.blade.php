@@ -129,7 +129,7 @@
     <div class="container">
         <div class="header">
             <h1>BUKTI PEMBAYARAN DENDA</h1>
-            <p>Perpustakaan & Manajemen Alat</p>
+            <p>Manajemen Alat</p>
             <p>Nomor Bukti: {{ $payment->id }}</p>
         </div>
 

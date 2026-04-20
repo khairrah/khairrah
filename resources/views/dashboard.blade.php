@@ -4,7 +4,7 @@
     <!-- Header Section with Background -->
     <div class="mb-8 rounded-lg p-8 shadow-lg" style="background-color: #CDEDEA;">
         <h1 class="text-4xl font-bold drop-shadow-md" style="color: #374151;">Halo, {{ auth()->user()->name }}! 👋</h1>
-        <p class="mt-2 drop-shadow-sm" style="color: #374151;">Siap untuk mengelola perpustakaan hari ini?</p>
+        <p class="mt-2 drop-shadow-sm" style="color: #374151;">Siap untuk meminjam alat hari ini?</p>
     </div>
 
     <!-- Stats Cards -->

@@ -130,8 +130,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>STRUK PENGEMBALIAN ALAT/BARANG</h1>
-            <p>Perpustakaan & Manajemen Alat</p>
+            <h1>LAPORAN PENGEMBALIAN ALAT/BARANG</h1>
+            <p>Manajemen Alat</p>
             <p>Nomor Transaksi: {{ $loan->id }}</p>
         </div>
 
@@ -231,7 +231,7 @@
                 <div class="section-title">VERIFIKASI PENGEMBALIAN</div>
                 <div class="info-row">
                     <div class="info-label">Diverifikasi Oleh</div>
-                    <div class="info-value">: Petugas Perpustakaan</div>
+                    <div class="info-value">: Petugas</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Tanggal Verifikasi</div>

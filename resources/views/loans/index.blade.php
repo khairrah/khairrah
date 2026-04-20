@@ -23,7 +23,7 @@
         @foreach($loans as $loan)
         <tr class="border-b text-center">
             <td class="px-4 py-2">{{ $loan->nama_peminjam }}</td>
-            <td class="px-4 py-2">{{ $loan->tool->nama_alat }}</td>
+            <td class="px-4 py-2">{{ optional($loan->tool)->nama_alat ?? '-' }}</td>
             <td class="px-4 py-2">{{ $loan->jumlah }}</td>
             <td class="px-4 py-2">{{ $loan->tanggal_pinjam }}</td>
             <td class="px-4 py-2">
