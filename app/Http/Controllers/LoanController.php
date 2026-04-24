@@ -3,170 +3,162 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loan;
-use App\Models\Tool;
+use App\Models\Book;
 use App\Helpers\ActivityHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoanController extends Controller
 {
-    // Tampilkan semua peminjaman
+    /**
+     * Tampilkan semua data peminjaman
+     */
     public function index()
     {
-        $loans = Loan::with('tool')->get();
-        return view('loans.index', compact('loans'));
+        $user = auth()->user();
+
+        if ($user->role === 'siswa') {
+            return view('siswa.loans'); // Data diambil inline di blade
+        }
+
+        // Admin
+        $loans = Loan::with(['book', 'user'])
+            ->whereNull('tanggal_kembali')
+            ->latest()
+            ->get();
+        return view('admin.loans.index', compact('loans'));
     }
 
-    // Form peminjaman
+
+    /**
+     * 🔥 TAMBAHAN DATA PENGEMBALIAN
+     */
+    public function returned()
+    {
+        $loans = Loan::with(['book', 'user'])
+            ->whereNotNull('tanggal_kembali')
+            ->latest()
+            ->get();
+
+        return view('admin.loans.returned', compact('loans'));
+    }
+
+    /**
+     * Form tambah peminjaman (ADMIN)
+     */
     public function create()
-    {
-        $tools = Tool::all();
-        return view('loans.create', compact('tools'));
-    }
+{
+    $books = \App\Models\Book::where('stok', '>', 0)->get();
 
-    // USER mengajukan peminjaman (status = pending)
+    return view('siswa.loans.create', compact('books'));
+}
+    /**
+     * Simpan peminjaman
+     */
     public function store(Request $request)
+{
+    $request->validate([
+        'book_id' => 'required',
+        'jumlah' => 'required|integer|min:1',
+        'tanggal_pinjam' => 'required',
+        'tanggal_kembali' => 'required',
+    ]);
+
+    \App\Models\Loan::create([
+        'user_id' => auth()->id(),
+        'book_id' => $request->book_id,
+        'jumlah' => $request->jumlah,
+        'tanggal_pinjam' => $request->tanggal_pinjam,
+        'tanggal_kembali_target' => $request->tanggal_kembali,
+        'status' => 'pending',
+    ]);
+
+    ActivityHelper::log('PEMINJAMAN', "Siswa " . auth()->user()->name . " meminjam buku " . ($request->book_id ? \App\Models\Book::find($request->book_id)->judul : '-'));
+
+    return redirect()->route('siswa.dashboard')
+        ->with('success', 'Berhasil pinjam buku');
+}
+    /**
+     * 🔥 TAMBAHAN (APPROVAL ADMIN)
+     */
+    public function approval()
     {
-        $request->validate([
-            'tool_id' => 'required|exists:tools,id',
-            'jumlah' => 'required|integer|min:1',
-            'tanggal_pinjam' => 'required|date'
-        ]);
+        $loans = Loan::with(['book', 'user'])
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
 
-        $tool = Tool::findOrFail($request->tool_id);
-
-        if ($request->jumlah > $tool->stok) {
-            return back()->with('error', 'Stok tidak cukup');
-        }
-
-        // Cek apakah user siswa atau admin
-        $isAdmin = auth()->user()->role === 'admin';
-        $redirectRoute = $isAdmin ? 'loans.index' : 'siswa.loans.index';
-
-        // Jangan set deadline di sini, petugas yang akan set saat approve
-        Loan::create([
-            'nama_peminjam' => auth()->user()->name,
-            'user_id' => auth()->id(),
-            'tool_id' => $request->tool_id,
-            'jumlah' => $request->jumlah,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tanggal_kembali_target' => null,  // Akan diset saat petugas approve
-            'catatan' => $request->catatan ?? null,
-            'status' => 'pending'
-        ]);
-        
-        // Catat aktivitas
-        ActivityHelper::log('CREATE_PEMINJAMAN', "Ajukan peminjaman alat: {$tool->nama_alat}");
-
-        return redirect()->route($redirectRoute)->with('success', 'Peminjaman berhasil diajukan, menunggu persetujuan');
+        return view('admin.loans.approval', compact('loans'));
     }
 
-    // PETUGAS menyetujui peminjaman + set deadline
-    public function approve(Request $request, $id)
+    /**
+     * ✅ APPROVE
+     */
+    public function approve(Loan $loan)
     {
-        $validated = $request->validate([
-            'durasi_hari' => 'required|integer|min:1|max:90'
-        ]);
-
-        $loan = Loan::findOrFail($id);
-        $tool = $loan->tool;
-
-        if ($loan->status != 'pending') {
-            return back();
+        // Kurangi stok buku
+        if ($loan->book) {
+            if ($loan->book->stok < $loan->jumlah) {
+                return redirect()->back()->with('error', 'Stok buku tidak mencukupi');
+            }
+            $loan->book->decrement('stok', $loan->jumlah);
         }
 
-        if ($loan->jumlah > $tool->stok) {
-            return back()->with('error', 'Stok tidak cukup');
-        }
+        $loan->update(['status' => 'approved']);
 
-        // Set deadline berdasarkan input durasi
-        $tanggal_pinjam = \Carbon\Carbon::parse($loan->tanggal_pinjam);
-        $tanggal_kembali_target = $tanggal_pinjam->copy()->addDays($validated['durasi_hari']);
+        ActivityHelper::log('APPROVAL', "Admin menyetujui peminjaman buku " . ($loan->book->judul ?? '-') . " oleh " . ($loan->user->name ?? '-'));
 
-        $loan->status = 'approved';
-        $loan->tanggal_kembali_target = $tanggal_kembali_target;
-        $loan->save();
-
-        $tool->stok -= $loan->jumlah;
-        $tool->save();
-
-        ActivityHelper::log('APPROVE_PEMINJAMAN', "Setujui peminjaman {$tool->nama_alat} sampai " . $tanggal_kembali_target->format('d M Y'));
-
-        return back()->with('success', 'Peminjaman disetujui sampai ' . $tanggal_kembali_target->format('d M Y'));
+        return redirect()->back()->with('success', 'Peminjaman disetujui');
     }
 
-    // ADMIN menolak peminjaman
-    public function reject($id)
+    /**
+     * ✅ REJECT
+     */
+    public function reject(Loan $loan)
     {
-        $loan = Loan::findOrFail($id);
-        $loan->status = 'rejected';
-        $loan->save();
+        $loan->update(['status' => 'rejected']);
 
-        return back()->with('success', 'Peminjaman ditolak');
+        ActivityHelper::log('REJECTION', "Admin menolak peminjaman buku " . ($loan->book->judul ?? '-') . " oleh " . ($loan->user->name ?? '-'));
+
+        return redirect()->back()->with('success', 'Peminjaman ditolak');
     }
 
-    // ADMIN memproses pengembalian
-    public function return($id)
+    /**
+     * ✅ RETURN (KEMBALIKAN)
+     */
+    public function returnBook(Loan $loan)
     {
-        $loan = Loan::findOrFail($id);
-
-        if ($loan->status != 'approved') {
-            return back()->with('error', 'Belum disetujui atau sudah dikembalikan');
-        }
-
-        $tool = $loan->tool;
-        $tool->stok += $loan->jumlah;
-        $tool->save();
-
-        $loan->status = 'returned';
-        $loan->tanggal_kembali = now();
-        $loan->save();
-
-        return back()->with('success', 'Alat berhasil dikembalikan');
-    }
-
-    // Halaman pengembalian
-    public function returns()
-    {
-        $loans = Loan::with('tool')->whereNull('tanggal_kembali')->get();
-        return view('returns.index', compact('loans'));
-    }
-
-    // Proses pengembalian dari halaman returns
-    public function processReturn($id)
-    {
-        $loan = Loan::findOrFail($id);
-
-        if ($loan->status != 'approved') {
-            return back()->with('error', 'Peminjaman ini tidak bisa dikembalikan');
-        }
-
-        $tool = $loan->tool;
-        $tool->stok += $loan->jumlah;
-        $tool->save();
-
-        $loan->status = 'returned';
-        $loan->tanggal_kembali = now();
-        $loan->save();
-
-        return redirect()->route('returns.index')->with('success', 'Alat berhasil diterima kembali');
-    }
-
-    // Update alasan kerusakan/hilang dari siswa
-    public function updateAlasan(\Illuminate\Http\Request $request, Loan $loan)
-    {
-        // Validasi: hanya siswa yang meminjam atau admin yang bisa update
-        if (auth()->id() !== $loan->user_id && auth()->user()->role !== 'admin') {
-            return back()->with('error', 'Tidak authorized');
-        }
-
-        $request->validate([
-            'alasan_siswa' => 'required|string|min:10|max:500'
-        ]);
-
         $loan->update([
-            'alasan_siswa' => $request->alasan_siswa
+            'tanggal_kembali' => now(),
+            'status' => 'returned'
         ]);
 
-        return back()->with('success', 'Laporan kerusakan/hilang berhasil disimpan');
+        // Kembalikan stok buku
+        if ($loan->book) {
+            $loan->book->increment('stok', $loan->jumlah);
+        }
+
+        ActivityHelper::log('PENGEMBALIAN', "Buku " . ($loan->book->judul ?? '-') . " telah dikembalikan oleh " . ($loan->user->name ?? '-'));
+
+        return redirect()->back()->with('success', 'Buku berhasil dikembalikan');
+    }
+
+    /**
+
+     * ✅ RIWAYAT PEMINJAMAN (SISWA)
+     */
+    public function history()
+    {
+        $historyLoans = Loan::with(['book', 'tool'])
+            ->where('user_id', auth()->id())
+            ->whereNotNull('tanggal_kembali')
+            ->latest()
+            ->paginate(10);
+
+        $totalDendaBayar = Loan::where('user_id', auth()->id())
+            ->where('denda_status', 'menunggu_pembayaran')
+            ->sum('denda');
+
+        return view('siswa.riwayat-peminjaman', compact('historyLoans', 'totalDendaBayar'));
     }
 }

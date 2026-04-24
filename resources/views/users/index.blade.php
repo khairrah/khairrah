@@ -1,11 +1,13 @@
 @extends('layouts.admin')
 
 @section('content')
-<h1 class="text-3xl font-bold mb-6" style="color: #374151;">Manajemen User</h1>
-
-<a href="{{ route('users.create') }}" class="inline-block mb-4 px-4 py-2 rounded font-semibold" style="background-color: #CDEDEA; color: #374151;">
-    + Tambah User
-</a>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-700">👥 Manajemen User</h1>
+    <a href="{{ route('users.create') }}" 
+       class="px-4 py-2 rounded font-semibold text-sm bg-blue-100 text-blue-800 hover:bg-blue-200 transition shadow-sm border border-blue-200 text-center w-full sm:w-auto">
+        + Tambah User
+    </a>
+</div>
 
 <div class="overflow-x-auto rounded shadow" style="background-color: #FFF7E6;">
 <table class="w-full border">

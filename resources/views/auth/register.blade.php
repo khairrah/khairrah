@@ -12,7 +12,7 @@
             <div class="px-6 py-8 sm:px-12 sm:py-10">
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-gray-900">DAFTAR AKUN</h1>
-                    <p class="text-sm text-gray-600 mt-2">Buat akun baru untuk meminjam alat</p>
+                    <p class="text-sm text-gray-600 mt-2">Buat akun baru untuk meminjam buku</p>
                 </div>
 
                 <form method="POST" action="{{ route('register') }}" class="space-y-5">

@@ -2,114 +2,139 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - UKK Alat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - UKK Buku</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
+    <style>
+        [x-cloak] { display: none !important; }
+        body { background-color: #fdfaf1; } /* Light Cream Background */
+    </style>
 </head>
 
-<body style="background-color: #F0FAF7;">
+<body class="text-gray-800 antialiased font-sans" x-data="{ sidebarOpen: false }">
 
-<div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
 
-    <!-- SIDEBAR -->
-    <div class="w-64 text-gray-800 flex flex-col shadow-lg border-r border-gray-200"
-     style="background-color: #D1FAE5;">
+        <!-- SIDEBAR -->
+        <aside x-cloak
+               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+               class="fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-100 z-50 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 flex flex-col shadow-sm">
+            
+            <!-- LOGO AREA -->
+            <div class="p-5 border-b border-gray-50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">📦</span>
+                    <span class="font-bold text-gray-700 tracking-tight text-lg">UKK Buku</span>
+                </div>
+                <button @click="sidebarOpen = false" class="lg:hidden text-gray-400 hover:text-red-500 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
 
-        <!-- LOGO -->
-        <div class="p-4 text-xl font-bold border-b border-gray-200 rounded-b-lg" style="background-color: #F0FAF7; color: #374151;">
-            📚 UKK Alat
+            <!-- USER INFO -->
+            <div class="p-5 border-b border-gray-50 bg-[#dceefa]/30">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Administrator</p>
+                <p class="text-sm font-bold text-gray-700 truncate">{{ auth()->user()->name }}</p>
+            </div>
+
+            <!-- NAVIGATION -->
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                <a href="{{ route('admin.dashboard') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/dashboard') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>🏠</span> Dashboard
+                </a>
+
+                <a href="{{ route('books.index') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/books*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>📚</span> Data Buku
+                </a>
+
+                <a href="{{ route('categories.index') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/categories*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>🏷️</span> Kategori
+                </a>
+
+                <p class="px-3 mt-4 mb-1 text-[9px] font-bold text-gray-400 uppercase tracking-widest">Transaksi</p>
+
+                <a href="{{ route('admin.loans.index') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/loans') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>🔄</span> Peminjaman
+                </a>
+
+                <a href="{{ route('admin.loans.approval') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/loans/approval*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>✅</span> Persetujuan
+                </a>
+
+                <a href="{{ route('admin.loans.returned') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/loans/returned*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>↩️</span> Pengembalian
+                </a>
+
+                <p class="px-3 mt-4 mb-1 text-[9px] font-bold text-gray-400 uppercase tracking-widest">Lainnya</p>
+
+                <a href="{{ route('users.index') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/users*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>👥</span> User
+                </a>
+
+                <a href="{{ route('admin.profile.password') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/profile/password*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>🔐</span> Ganti Password
+                </a>
+
+                <a href="{{ route('activity-logs.index') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition
+                   {{ request()->is('admin/activity-logs*') ? 'bg-[#dceefa] text-blue-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <span>📊</span> Log Aktivitas
+                </a>
+            </nav>
+
+            <!-- LOGOUT -->
+            <div class="p-4 border-t border-gray-50">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-gray-50 text-gray-600 font-bold text-[12px] hover:bg-red-50 hover:text-red-600 transition">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- TOP BAR (Mobile Only) -->
+            <header class="lg:hidden h-14 bg-white border-b border-gray-100 flex items-center justify-between px-4 z-40 flex-shrink-0">
+                <button @click="sidebarOpen = true" class="p-1.5 rounded-lg text-gray-500 hover:bg-gray-50 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <span class="font-bold text-gray-700 text-sm">UKK Buku</span>
+                <div class="w-8"></div>
+            </header>
+
+            <!-- CONTENT WRAPPER -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-12">
+                <div class="max-w-4xl mx-auto w-full">
+                    @yield('content')
+                </div>
+            </main>
         </div>
-
-        <!-- USER -->
-        <div class="p-4 text-sm border-b border-gray-200" style="background-color: #DCEBFA;">
-            <span style="color: #374151;">Login sebagai:</span><br>
-            <b style="color: #374151;">{{ auth()->user()->name }}</b><br>
-            <span class="text-xs font-semibold" style="color: #374151;">{{ auth()->user()->role }}</span>
-        </div>
-
-        <!-- MENU -->
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-
-            <!-- DASHBOARD -->
-            <a href="{{ route('dashboard') }}"
-            <a class="block px-4 py-3 rounded-lg
-           text-[15px] font-medium
-           text-slate-700
-           hover:bg-blue-100 hover:text-blue-700
-           transition">
-    🏠 Dashboard
-</a>
-
-            </a>
-
-            <!-- MASTER DATA -->
-            <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;"></p>
-            </div>
-
-            <a href="{{ route('tools.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('tools*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                📦 Data Alat
-            </a>
-
-            <a href="{{ route('categories.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('categories*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                🏷️ Kategori
-            </a>
-
-            <!-- TRANSAKSI -->
-            <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;"></p>
-            </div>
-
-            <a href="{{ route('loans.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('loans*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                🔄 Data Peminjamaan
-            </a>
-
-            <a href="{{ route('returns.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('returns*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                ↩️ Pengembalian
-            </a>
-
-            <!-- ADMINISTRATOR -->
-            <div class="mt-4 pt-2">
-                <p class="text-xs font-bold uppercase" style="color: #374151; opacity: 0.6;"></p>
-            </div>
-
-            <a href="{{ route('users.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('users*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                👥 Manajemen User
-            </a>
-
-            <a href="{{ route('activity-logs.index') }}"
-               class="block px-4 py-2 rounded transition font-semibold border-l-4"
-               style="{{ request()->is('activity-logs*') ? 'background-color: #CDEDEA; color: #374151; border-color: #5B9FFF;' : 'color: #374151; border-color: transparent;' }}">
-                📊 Log Aktivitas
-            </a>
-
-        </nav>
-
-        <!-- LOGOUT -->
-        <form method="POST" action="{{ route('logout') }}" class="p-4 border-t border-gray-200">
-            @csrf
-            <button class="w-full py-2 rounded font-semibold transition" style="background-color: #5B9FFF; color: #FFFFFF;">
-                🚪 Logout
-            </button>
-        </form>
 
     </div>
 
-    <!-- KONTEN -->
-    <div class="flex-1 p-8 text-gray-900 overflow-x-auto" style="background-color: #FFF7E6;">
-        @yield('content')
-    </div>
-
-</div>
+    <!-- Mobile Overlay -->
+    <div x-show="sidebarOpen" 
+         @click="sidebarOpen = false"
+         class="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40 lg:hidden"></div>
 
 </body>
 </html>

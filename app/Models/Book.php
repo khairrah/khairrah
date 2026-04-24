@@ -2,16 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
 
 class Book extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'id_alat',
-        'nama_alat',
+        'kode',
+        'judul',
+        'category_id',
+        'pengarang',
+        'penerbit',
+        'tahun',
         'stok'
     ];
+
+    // 🔥 RELASI KE CATEGORY
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

@@ -3,12 +3,12 @@
 @section('content')
 
 <!-- Header -->
-<div class="mb-8 rounded-lg p-8 shadow-lg" style="background-color: #CDEDEA;">
-    <h1 class="text-4xl font-bold drop-shadow-md" style="color: #374151;">
+<div class="mb-8 rounded-lg p-6 md:p-8 shadow-lg text-center md:text-left" style="background-color: #CDEDEA;">
+    <h1 class="text-2xl md:text-4xl font-bold drop-shadow-md" style="color: #374151;">
         Halo, {{ auth()->user()->name }}! 👋
     </h1>
-    <p class="mt-2 drop-shadow-sm" style="color: #374151;">
-        Selamat datang di peminjaman alat
+    <p class="mt-2 text-sm md:text-base drop-shadow-sm" style="color: #374151;">
+        Selamat datang di peminjaman buku
     </p>
 </div>
 
@@ -162,7 +162,7 @@
     @php
         $myLoans = \App\Models\Loan::where('user_id', auth()->id())
             ->whereNull('tanggal_kembali')
-            ->with('tool')
+            ->with('book')
             ->orderBy('tanggal_pinjam', 'desc')
             ->get();
     @endphp
@@ -172,7 +172,7 @@
             <table class="w-full border-collapse">
                 <thead style="background-color: #CDEDEA;">
                     <tr>
-                        <th class="px-4 py-2 text-left" style="color: #374151;">Alat</th>
+                        <th class="px-4 py-2 text-left" style="color: #374151;">Buku</th>
                         <th class="px-4 py-2 text-left" style="color: #374151;">Jumlah</th>
                         <th class="px-4 py-2 text-left" style="color: #374151;">Tanggal Pinjam</th>
                         <th class="px-4 py-2 text-left" style="color: #374151;">Status</th>
@@ -181,11 +181,17 @@
                 <tbody>
                     @foreach($myLoans as $loan)
                     <tr class="border-b hover:" style="background-color: #FFF7E6;">
-                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tool->nama_alat ?? '-' }}</td>
+                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->book->judul ?? '-' }}</td>
                         <td class="px-4 py-2" style="color: #374151;">{{ $loan->jumlah }}</td>
                         <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_pinjam }}</td>
                         <td class="px-4 py-2">
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #CDEDEA; color: #374151;">Dipinjam</span>
+                            @if($loan->status == 'pending')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">⏳ Pending</span>
+                            @elseif($loan->status == 'approved')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">✅ Disetujui</span>
+                            @else
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">❌ Ditolak</span>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -195,7 +201,7 @@
     @else
         <div class="text-center py-8" style="color: #374151;">
             <p class="text-lg">Tidak ada peminjaman aktif</p>
-            <p class="text-sm mt-2">Anda dapat memulai peminjaman alat melalui halaman peminjaman</p>
+            <p class="text-sm mt-2">Anda dapat memulai peminjaman buku melalui halaman peminjaman</p>
         </div>
     @endif
 </div>
@@ -207,7 +213,7 @@
     @php
         $historyLoans = \App\Models\Loan::where('user_id', auth()->id())
             ->whereNotNull('tanggal_kembali')
-            ->with('tool')
+            ->with('book')
             ->orderBy('tanggal_kembali', 'desc')
             ->get();
     @endphp
@@ -217,7 +223,7 @@
             <table class="w-full border-collapse">
                 <thead style="background-color: #CDEDEA;">
                     <tr>
-                        <th class="px-4 py-2 text-left" style="color: #374151;">Alat</th>
+                        <th class="px-4 py-2 text-left" style="color: #374151;">Buku</th>
                         <th class="px-4 py-2 text-left" style="color: #374151;">Jumlah</th>
                         <th class="px-4 py-2 text-left" style="color: #374151;">Tanggal Pinjam</th>
                         <th class="px-4 py-2 text-left" style="color: #374151;">Tanggal Kembali</th>
@@ -226,7 +232,7 @@
                 <tbody>
                     @foreach($historyLoans as $loan)
                     <tr class="border-b" style="background-color: #FFF7E6;">
-                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->tool->nama_alat ?? '-' }}</td>
+                        <td class="px-4 py-2" style="color: #374151;">{{ $loan->book->judul ?? '-' }}</td>
                         <td class="px-4 py-2" style="color: #374151;">{{ $loan->jumlah }}</td>
                         <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_pinjam }}</td>
                         <td class="px-4 py-2" style="color: #374151;">{{ $loan->tanggal_kembali }}</td>

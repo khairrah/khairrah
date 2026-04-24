@@ -18,14 +18,13 @@ class DatabaseSeeder extends Seeder
         // Seed categories first
         $this->call(CategorySeeder::class);
 
-        // Create test users
-        User::factory()->create([
+        \App\Models\User::create([
             'name' => 'Admin',
-            'email' => 'admin@test.com',
-            'password' => bcrypt('password123'),
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('123456'),
             'role' => 'admin'
         ]);
-
+        
         User::factory()->create([
             'name' => 'Siswa Test',
             'email' => 'siswa@test.com',
